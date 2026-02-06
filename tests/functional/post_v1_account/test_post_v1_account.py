@@ -2,7 +2,11 @@ from typing import Any
 
 from json import loads
 
+import requests
 from requests import Response
+
+import random
+import string
 
 from dm_api_account.apis.account_api import AccountApi
 from dm_api_account.apis.login_api import LoginApi
@@ -14,7 +18,7 @@ def test_post_v1_account():
     account_api = AccountApi(host='http://185.185.143.231:5051')
     login_api = LoginApi(host='http://185.185.143.231:5051')
     mailhog_api = MailhogApi(host='http://185.185.143.231:5025')
-    login = 'breeze81'
+    login = 'breeze91'
     email = f'{login}@mail.ru'
     password = '12345607030'
     json_data = {
@@ -24,12 +28,12 @@ def test_post_v1_account():
     }
 
     response = account_api.post_v1_account(json_data=json_data)
-    print(response.status_code)
+    print(f'Пользователь зарегистрирован', response.status_code)
     assert response.status_code == 201, f"Пользователь не создан {response.json()}"
 
     # Получить письма из почтового ящика
     response = mailhog_api.get_api_v2_messages(response)
-    print(response.status_code)
+    print(f'Пьсьма получены', response.status_code)
     assert response.status_code == 200, "Не удалось получить письма"
     # pprint.pprint(response.json())
 
@@ -39,7 +43,7 @@ def test_post_v1_account():
 
     # Активация пользователя
     response = account_api.put_v1_account_token(token=token)
-    print(response.status_code)
+    print(f'Активация пользователя {login} прошла успешна', response.status_code)
     assert response.status_code == 200, "Пользователь не был активирован"
 
 
@@ -50,9 +54,61 @@ def test_post_v1_account():
         'rememberMe': True
     }
     response = login_api.post_v1_account_login(json_data=json_data)
-    print(response.status_code)
+    print(f'Авторизация пользователя {login} прошла успешна', response.status_code)
     assert response.status_code == 200, "Пользователь не авторизован"
+    # Изменение почты
+    def generate_random_email():
+        domains = ["example.com", "testmail.co", "sample.net"]
+        user_len = random.randint(5, 10)
+        user = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(user_len))
+        domain = random.choice(domains)
+        return f"{user}@{domain}"
+    email_new = generate_random_email()
+    print(f'Сгенерирован email адрес', email_new)
 
+    json_data = {
+        'login': login,
+        'password': password,
+        'email': email_new,
+    }
+
+    response = account_api.put_v1_account_email(json_data)
+    assert response.status_code == 200, "Почта не изменена"
+    print(f'Почта успешно изменена', response.status_code)
+
+    # Попытка входа с предыдущим email
+    json_data = {
+        'login': login,
+        'password': password,
+        'rememberMe': True
+    }
+    response = login_api.post_v1_account_login(json_data=json_data)
+    print(f'Авторизация пользователя {login} недоступна', response.status_code)
+    assert response.status_code == 403, "Пользователь авторизован"
+
+    # Получить письма из почтового ящика
+    response = mailhog_api.get_api_v2_messages(response)
+    print(f'Пьсьма получены', response.status_code)
+    assert response.status_code == 200, "Не удалось получить письма"
+
+    # Получить активационный токен
+    token = get_activation_token_by_login(login, response)
+    assert token is not None, f"Токен для пользователя {login} не был получен"
+
+    # Активация пользователя
+    response = account_api.put_v1_account_token(token=token)
+    print(f'Активация пользователя {login} прошла успешна', response.status_code)
+    assert response.status_code == 200, "Пользователь не был активирован"
+
+    # Авторизация пользователя
+    json_data = {
+        'login': login,
+        'password': password,
+        'rememberMe': True
+    }
+    response = login_api.post_v1_account_login(json_data=json_data)
+    print(f'Авторизация пользователя {login} прошла успешна', response.status_code)
+    assert response.status_code == 200, "Пользователь не авторизован"
 
 
 
