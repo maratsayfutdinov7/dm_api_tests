@@ -1,14 +1,10 @@
 import requests
 
-class LoginApi:
-    def __init__(
-            self,
-            host,
-            headers=None
-    ):
-        # Доступ к данным через другие методы
-        self.host = host
-        self.headers = headers
+from restclient.client import RestClient
+
+
+class LoginApi(RestClient):
+
 
     def post_v1_account_login(
             self,
@@ -18,8 +14,8 @@ class LoginApi:
         """
         Authenticate via credentials
         """
-        response = requests.post(
-            url=f'{self.host}/v1/account/login',
+        response = self.post(
+            path=f'/v1/account/login',
             json=json_data
         )
         return response
