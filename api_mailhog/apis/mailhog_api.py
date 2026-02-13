@@ -1,15 +1,12 @@
+from json import JSONDecodeError
+from tkinter.constants import SEL_LAST
+
 import requests
 
+from restclient.client import RestClient
 
-class MailhogApi:
-    def __init__(
-            self,
-            host,
-            headers=None
-    ):
-        # Доступ к данным через другие методы
-        self.host = host
-        self.headers = headers
+
+class MailhogApi(RestClient):
 
     def get_api_v2_messages(
             self,
@@ -22,9 +19,10 @@ class MailhogApi:
         Get user emails
         """
 
-        response = requests.get(
-            url=f'{self.host}/api/v2/messages',
+        response = self.get(
+            path=f'/api/v2/messages',
             params=params,
             verify=False
         )
         return response
+
