@@ -3,6 +3,8 @@ from typing import Any
 from json import loads
 
 import requests
+
+import json
 from requests import Response
 
 import random
@@ -34,7 +36,7 @@ def test_post_v1_account():
     login_api = LoginApi(configuration=dm_api_configuration)
     mailhog_api = MailhogApi(configuration=mailhog_configuration)
 
-    login = 'breeze407'
+    login = 'breeze941'
     email = f'{login}@mail.ru'
     password = '12345607030'
     json_data = {
@@ -49,7 +51,6 @@ def test_post_v1_account():
     # Получить письма из почтового ящика
     response = mailhog_api.get_api_v2_messages(response)
     assert response.status_code == 200, "Не удалось получить письма"
-    # pprint.pprint(response.json())
 
     # Получить активационный токен
     token = get_activation_token_by_login(login, response)
@@ -117,20 +118,25 @@ def test_post_v1_account():
     assert response.status_code == 200, "Пользователь не авторизован"
 
 
-
 def get_activation_token_by_login(
         login: str,
         response: Response
-        ) -> Any:
-    token = None
-    for item in response.json()['items']:
-        user_data = loads(item['Content']['Body'])
-        user_login = user_data['Login']
-        if user_login == login:
-            print(user_login)
-            token = user_data['ConfirmationLinkUrl'].split('/')[-1]
-            print(token)
-    return token
+        ):
+    for item in response.json().get('items', []):
+        try:
+            content_body = item.get('Content', {}).get('Body')
+            if not content_body:
+                continue
+            user_data = json.loads(content_body)
+            if user_data.get('Login') == login:
+                url = user_data.get('ConfirmationLinkUrl', '')
+                if url:
+                    token = url.split('/')[-1]
+                    return token
+        except (json.JSONDecodeError, TypeError, KeyError) as e:
+            continue
+    return None
+
 
 
 

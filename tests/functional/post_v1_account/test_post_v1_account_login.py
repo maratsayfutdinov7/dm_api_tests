@@ -2,6 +2,7 @@ from typing import Any
 
 from json import loads
 
+import json
 import requests
 from requests import Response
 
@@ -13,8 +14,8 @@ from dm_api_account.apis.login_api import LoginApi
 from api_mailhog.apis.mailhog_api import MailhogApi
 
 import structlog
-from restclient.configuration import Configuration as MailhogConfiguration
-from restclient.configuration import Configuration as DmApiConfiguration
+
+from restclient.configuration import Configuration
 
 structlog.configure(
     processors=[
@@ -25,15 +26,15 @@ structlog.configure(
 
 def test_post_v1_account_login():
     # Регистрация пользователя
-    mailhog_configuration = MailhogConfiguration(host='http://185.185.143.231:5025', disable_log = False)
-    dm_api_configuration = DmApiConfiguration(host='http://185.185.143.231:5051', disable_log = False)
+    mailhog_configuration = Configuration(host='http://185.185.143.231:5025', disable_log = False)
+    dm_api_configuration = Configuration(host='http://185.185.143.231:5051', disable_log = False)
 
     account_api = AccountApi(configuration=dm_api_configuration)
     login_api = LoginApi(configuration=dm_api_configuration)
     mailhog_api = MailhogApi(configuration=mailhog_configuration)
 
 
-    login = 'breeze408'
+    login = 'breeze942'
     email = f'{login}@mail.ru'
     password = '12345607030'
     json_data = {
@@ -71,13 +72,18 @@ def test_post_v1_account_login():
 def get_activation_token_by_login(
         login: str,
         response: Response
-) -> Any:
-    token = None
-    for item in response.json()['items']:
-        user_data = loads(item['Content']['Body'])
-        user_login = user_data['Login']
-        if user_login == login:
-            print(user_login)
-            token = user_data['ConfirmationLinkUrl'].split('/')[-1]
-            print(token)
-    return token
+        ):
+    for item in response.json().get('items', []):
+        try:
+            content_body = item.get('Content', {}).get('Body')
+            if not content_body:
+                continue
+            user_data = json.loads(content_body)
+            if user_data.get('Login') == login:
+                url = user_data.get('ConfirmationLinkUrl', '')
+                if url:
+                    token = url.split('/')[-1]
+                    return token
+        except (json.JSONDecodeError, TypeError, KeyError) as e:
+            continue
+    return None

@@ -44,5 +44,4 @@ class AccountApi(RestClient):
             path=f'/v1/account/email',
             json=json_data
         )
-        print(f'Изменение почты', response.status_code)
         return response
