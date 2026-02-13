@@ -33,7 +33,7 @@ def test_put_v1_account_email():
     login_api = LoginApi(configuration=dm_api_configuration)
     mailhog_api = MailhogApi(configuration=mailhog_configuration)
 
-    login = 'kap4'
+    login = 'kdlsklmnmx'
     email = f'{login}@mail.ru'
     password = '12345607030'
     json_data = {
