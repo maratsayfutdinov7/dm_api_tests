@@ -34,7 +34,7 @@ def test_put_v1_account_token():
     login_api = LoginApi(configuration=dm_api_configuration)
     mailhog_api = MailhogApi(configuration=mailhog_configuration)
 
-    login = 'mar41k4'
+    login = 'zes4'
     email = f'{login}@mail.ru'
     password = '12345607030'
     json_data = {
