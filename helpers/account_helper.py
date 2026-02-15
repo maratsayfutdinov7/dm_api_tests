@@ -1,4 +1,6 @@
 import json
+import random
+import string
 
 from requests import Response
 
@@ -41,7 +43,12 @@ class AccountHelper:
 
         return  response
 
-    def user_login(self, login:str, password:str, remember_me:bool = True):
+    def user_login(
+            self,
+            login: str,
+            password: str,
+            remember_me: bool = True
+            ):
         json_data = {
             'login': login,
             'password': password,
@@ -50,6 +57,24 @@ class AccountHelper:
         response = self.dm_account_api.login_api.post_v1_account_login(json_data=json_data)
         assert response.status_code == 200, "Пользователь не авторизован"
         return response
+
+    def change_email(
+            self,
+            login: str,
+            password: str,
+            email_new: str
+            ):
+        json_data = {
+            'login': login,
+            'password': password,
+            'email': email_new,
+        }
+
+        response = self.dm_account_api.account_api.put_v1_account_email(json_data)
+        assert response.status_code == 200, "Почта не изменена"
+
+        return response
+
 
     @staticmethod
     def get_activation_token_by_login(
@@ -70,3 +95,12 @@ class AccountHelper:
             except (json.JSONDecodeError, TypeError, KeyError) as e:
                 continue
         return None
+
+    @staticmethod
+    def generate_random_email():
+        domains = ["example.com", "testmail.co", "sample.net"]
+        user_len = random.randint(5, 10)
+        user = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(user_len))
+        domain = random.choice(domains)
+        return f"{user}@{domain}"
+    email_new = generate_random_email()
