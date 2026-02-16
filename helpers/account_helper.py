@@ -8,6 +8,8 @@ from requests import Response
 from services.dm_api_account import DmApiAccount
 from services.api_mailhog import MailHogApi
 
+from retrying import retry
+
 
 def retrier(
         function
