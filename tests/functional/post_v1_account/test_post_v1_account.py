@@ -39,7 +39,7 @@ def test_post_v1_account():
 
     account_helper = AccountHelper(dm_account_api=account, mailhog=mailhog)
 
-    login = 'bfb1f7e9-0d1e-43cc-8ab3-5sad13'
+    login = 'bfb1f7e9-0d1e-43cc-8ab3-osdas0di0xzc'
     email = f'{login}@mail.ru'
     password = '12345607030'
     account_helper.register_new_user(login=login,password=password,email=email)
