@@ -119,8 +119,23 @@ class AccountHelper:
         self.dm_account_api.account_api.set_headers(token)
         self.dm_account_api.login_api.set_headers(token)
 
+    def logout_client(
+            self
+            ):
+
+        response = self.dm_account_api.login_api.delete_v1_account_login()
+        return response
+
+    def logout_client_all(
+            self
+            ):
+
+        response = self.dm_account_api.login_api.delete_all_v1_account_login()
+        return response
+
 
     @retrier
+    # Получение активационного токена и
     def get_activation_token_by_login(
             self,
             login: str,

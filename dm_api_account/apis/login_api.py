@@ -19,3 +19,29 @@ class LoginApi(RestClient):
             json=json_data
         )
         return response
+
+    def delete_v1_account_login(
+            self,
+            **kwargs
+    ):
+        """
+        Выход из аккаунта текущим пользователем
+        """
+        response = self.delete(
+            path=f'/v1/account/login',
+            **kwargs
+        )
+        return response
+
+    def delete_all_v1_account_login(
+            self,
+            **kwargs
+    ):
+        """
+        Выход из аккаунта текущим пользователем
+        """
+        response = self.delete(
+            path=f'/v1/account/login/all',
+            **kwargs
+        )
+        return response
