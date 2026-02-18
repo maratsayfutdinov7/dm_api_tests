@@ -33,36 +33,6 @@ class AccountApi(RestClient):
         return response
 
 
-
-    def post_v1_account_password(
-            self,
-            **kwargs
-            ):
-        """
-        Запрос токена на изменение пароля
-        """
-
-        response = self.post(
-            path=f'/v1/account/password',
-            **kwargs
-        )
-        return response
-
-
-
-    def put_v1_account_password(
-            self,
-            json_data
-            ):
-        """
-        Изменение пароля
-        """
-        response = self.put(
-            path=f'/v1/account',
-            json=json_data
-        )
-        return response
-
     def put_v1_account_token(
             self,
             token
@@ -94,9 +64,28 @@ class AccountApi(RestClient):
         return response
 
 
+    def post_v1_account_password(
+            self,
+            **kwargs
+            ):
+        """
+        Запрос токена на изменение пароля
+        """
+        response = self.post(
+            path=f'/v1/account/password',
+            **kwargs
+        )
+        return response
 
-def post_v1_account_password(
-        login,
-        password
-        ):
-    return None
+    def put_v1_account_password(
+            self,
+            **kwargs
+            ):
+        """
+        Изменение пароля
+        """
+        response = self.put(
+            path=f'/v1/account/password',
+            **kwargs
+        )
+        return response

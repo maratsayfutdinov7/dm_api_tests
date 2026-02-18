@@ -32,7 +32,7 @@ def test_put_v1_account_token():
     account = DmApiAccount(configuration=dm_api_configuration)
     mailhog = MailhogApi(configuration=mailhog_configuration)
 
-    login = 'cf9524da-025f-4c17-bc8c-asdsadsada'
+    login = 'cf9524da-025f-4c17-bc8c-xzczxczxczxczxc'
     email = f'{login}@mail.ru'
     password = '12345607030'
     json_data = {

@@ -38,7 +38,7 @@ def test_put_v1_account_email():
     account_helper = AccountHelper(dm_account_api=account, mailhog=mailhog)
 
 
-    login = '5a9be3dc-f042-4a60-8124-sadadsadas'
+    login = '5a9be3dc-f042-4a60-8124-asdasdasdas'
     email = f'{login}@mail.ru'
     password = '12345607030'
 
