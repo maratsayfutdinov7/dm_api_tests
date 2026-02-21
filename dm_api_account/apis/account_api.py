@@ -10,7 +10,7 @@ class AccountApi(RestClient):
             json_data
             ):
         """
-        Register new user
+        Регистрация пользователя
         """
 
         response = self.post(
@@ -19,12 +19,26 @@ class AccountApi(RestClient):
         )
         return response
 
+    def get_v1_account(
+            self,
+            **kwargs
+            ):
+        """
+        Получение информации о пользователе
+        """
+        response = self.get(
+            path=f'/v1/account',
+            **kwargs
+        )
+        return response
+
+
     def put_v1_account_token(
             self,
             token
     ):
         """
-        Activate registered user
+        Активация пользователя
         """
         headers = {
             'accept': 'text/plain',
@@ -40,8 +54,38 @@ class AccountApi(RestClient):
      self,
      json_data
     ):
+        """
+        Изменение почты
+        """
         response = self.put(
             path=f'/v1/account/email',
             json=json_data
+        )
+        return response
+
+
+    def post_v1_account_password(
+            self,
+            **kwargs
+            ):
+        """
+        Запрос токена на изменение пароля
+        """
+        response = self.post(
+            path=f'/v1/account/password',
+            **kwargs
+        )
+        return response
+
+    def put_v1_account_password(
+            self,
+            **kwargs
+            ):
+        """
+        Изменение пароля
+        """
+        response = self.put(
+            path=f'/v1/account/password',
+            **kwargs
         )
         return response
