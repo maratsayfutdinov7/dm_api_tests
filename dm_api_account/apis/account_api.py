@@ -1,5 +1,8 @@
 import requests
 
+from dm_api_account.models.account_token import AccountToken
+from dm_api_account.models.change_email import ChangeEmail
+from dm_api_account.models.registration import Registration
 from restclient.client import RestClient
 
 
@@ -7,15 +10,14 @@ class AccountApi(RestClient):
 
     def post_v1_account(
             self,
-            json_data
+            registration: Registration
             ):
         """
         Регистрация пользователя
         """
-
         response = self.post(
             path=f'/v1/account',
-            json=json_data
+            json=registration.model_dump(exclude_none=True, by_alias=True)
         )
         return response
 
@@ -32,10 +34,9 @@ class AccountApi(RestClient):
         )
         return response
 
-
     def put_v1_account_token(
             self,
-            token
+            account_token: AccountToken
     ):
         """
         Активация пользователя
@@ -45,21 +46,21 @@ class AccountApi(RestClient):
         }
 
         response = self.put(
-            path=f'/v1/account/{token}',
+            path=f'/v1/account/{account_token}',
             headers=headers
         )
         return response
 
     def put_v1_account_email(
      self,
-     json_data
+     change_email: ChangeEmail
     ):
         """
         Изменение почты
         """
         response = self.put(
             path=f'/v1/account/email',
-            json=json_data
+            json=change_email.model_dump(exclude_none=True, by_alias=True)
         )
         return response
 

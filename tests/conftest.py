@@ -1,4 +1,6 @@
 import datetime
+import random
+import string
 from collections import namedtuple
 
 import pytest
@@ -63,3 +65,19 @@ def prepare_user():
     User = namedtuple('User',['login', 'password', 'email'])
     user = User(login=login,password=password,email=email)
     return user
+
+@pytest.fixture
+def generate_random_email():
+    domains = ["example.com", "testmail.co", "sample.net"]
+    user_len = random.randint(5, 10)
+    user = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(user_len))
+    domain = random.choice(domains)
+    email_new = f"{user}@{domain}"
+    return  email_new
+
+@pytest.fixture
+def generate_random_password():
+    length = random.randint(8, 12)
+    characters = string.ascii_letters + string.digits
+    new_password = ''.join(random.choice(characters) for _ in range(length))
+    return new_password
