@@ -2,7 +2,10 @@ import requests
 
 from dm_api_account.models.account_token import AccountToken
 from dm_api_account.models.change_email import ChangeEmail
+from dm_api_account.models.change_password import ChangePassword
 from dm_api_account.models.registration import Registration
+from dm_api_account.models.reset_password import ResetPassword
+from dm_api_account.models.user_envelope import UserEnvelope
 from restclient.client import RestClient
 
 
@@ -36,7 +39,8 @@ class AccountApi(RestClient):
 
     def put_v1_account_token(
             self,
-            account_token: AccountToken
+            account_token: AccountToken,
+            validate_response=True
     ):
         """
         Активация пользователя
@@ -49,6 +53,8 @@ class AccountApi(RestClient):
             path=f'/v1/account/{account_token}',
             headers=headers
         )
+        if validate_response:
+            return UserEnvelope(**response.json())
         return response
 
     def put_v1_account_email(
@@ -67,26 +73,27 @@ class AccountApi(RestClient):
 
     def post_v1_account_password(
             self,
-            **kwargs
+            reset_password: ResetPassword
+
             ):
         """
-        Запрос токена на изменение пароля
+        Сброс пароля
         """
         response = self.post(
             path=f'/v1/account/password',
-            **kwargs
+            json=reset_password.model_dump(exclude_none=True, by_alias=True)
         )
         return response
 
     def put_v1_account_password(
             self,
-            **kwargs
+            change_password: ChangePassword
             ):
         """
         Изменение пароля
         """
         response = self.put(
             path=f'/v1/account/password',
-            **kwargs
+            json=change_password.model_dump(exclude_none=True, by_alias=True)
         )
         return response

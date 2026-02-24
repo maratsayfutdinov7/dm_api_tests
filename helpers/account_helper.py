@@ -4,8 +4,10 @@ import string
 import time
 
 from dm_api_account.models.change_email import ChangeEmail
+from dm_api_account.models.change_password import ChangePassword
 from dm_api_account.models.login_credentials import LoginCredentials
 from dm_api_account.models.registration import Registration
+from dm_api_account.models.reset_password import ResetPassword
 from services.api_mailhog import MailHogApi
 from services.dm_api_account import DmApiAccount
 
@@ -72,26 +74,24 @@ class AccountHelper:
         token = self.get_activation_token_by_login(login=login)
         end_time = time.time()
         assert end_time - start_time < 3, "Время ожидания активации превышено"
-
         assert token is not None, f"Токен для пользователя {login} не был получен"
 
         response =self.dm_account_api.account_api.put_v1_account_token(account_token=token)
-        assert response.status_code == 200, "Пользователь не был активирован"
-
         return  response
 
     def user_login(
             self,
             login: str,
             password: str,
-            remember_me: bool = True
+            remember_me: bool = True,
+            validate_response=False
             ):
         login_credentials = LoginCredentials(
             login=login,
             password=password,
             remember_me=remember_me
         )
-        response = self.dm_account_api.login_api.post_v1_account_login(login_credentials=login_credentials)
+        response = self.dm_account_api.login_api.post_v1_account_login(login_credentials=login_credentials, validate_response=validate_response)
         assert response.headers['x-dm-auth-token'], "Токен пользователя не был получен"
         assert response.status_code == 200, "Пользователь не авторизован"
         return response
@@ -117,7 +117,8 @@ class AccountHelper:
             self,
             login: str,
             password: str,
-            remember_me: bool = True
+            remember_me: bool = True,
+            validate_response = False
             ):
         credentials = LoginCredentials(
             login=login,
@@ -126,7 +127,8 @@ class AccountHelper:
         )
 
         response = self.dm_account_api.login_api.post_v1_account_login(
-            login_credentials=credentials
+            login_credentials=credentials,
+            validate_response = validate_response
         )
         token = {
             'x-dm-auth-token': response.headers['x-dm-auth-token']
@@ -155,23 +157,19 @@ class AccountHelper:
         response = self.dm_account_api.login_api.delete_all_v1_account_login()
         return response
 
-    def change_password(self, login: str, email: str, old_password: str, new_password: str):
+    def change_password(self, login: str, email: str, old_password: str, new_password: str, token:str):
+        reset_password_model = ResetPassword(login=login, email=email)
+
+
         self.dm_account_api.account_api.post_v1_account_password(
-            json={
-                "login": login,
-                "email": email
-            }
-        )
+        reset_password=reset_password_model
+    )
 
         token_activation = self.get_activation_token_by_login(login=login, token_type='reset')
-        self.dm_account_api.account_api.put_v1_account_password(
-            json={
-                "login": login,
-                "oldPassword": old_password,
-                "newPassword": new_password,
-                "token": token_activation
-            }
-        )
+
+        change_password_model = ChangePassword(login=login,token=token_activation,old_password=old_password,new_password=new_password)
+        self.dm_account_api.account_api.put_v1_account_password(change_password=change_password_model)
+
 
     @retrier
 # Получение токена активационного и для сброса пароля
