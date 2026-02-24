@@ -1,7 +1,11 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List, Optional
+from typing import (
+    List,
+    Optional,
+    Any,
+)
 
 from enum import StrEnum
 
@@ -42,4 +46,4 @@ class User(BaseModel):
 class UserEnvelope(BaseModel):
     model_config = ConfigDict(extra='forbid')
     resource: Optional[User] = None
-    metadata: Optional[str] = None
+    metadata: Optional[Any] = None

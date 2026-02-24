@@ -4,7 +4,6 @@ from pydantic import (
     ConfigDict
 )
 
-# ... - обязательное поле, ConfigDict(extra='forbid') - обязательное для заполнение поле (!= null)
 class ChangePassword(BaseModel):
     model_config = ConfigDict(extra='forbid')
     login: str = Field(..., description='Логин')

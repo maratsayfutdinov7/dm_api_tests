@@ -87,12 +87,11 @@ def generate_random_password():
 @pytest.fixture
 def get_activation_token_by_login(
         mailhog_api
-        ):  # Предполагаем, что фикстура mailhog_api уже есть
+        ):
     def _get_token(
             login: str,
             token_type: str = 'activation'
             ):
-        # Вызываем метод получения сообщений у API Mailhog
         response = mailhog_api.get_api_v2_messages()
 
         for item in response.json().get('items', []):

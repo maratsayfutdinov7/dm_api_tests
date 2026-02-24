@@ -59,7 +59,8 @@ class AccountApi(RestClient):
 
     def put_v1_account_email(
      self,
-     change_email: ChangeEmail
+     change_email: ChangeEmail,
+     validate_response=True
     ):
         """
         Изменение почты
@@ -68,13 +69,15 @@ class AccountApi(RestClient):
             path=f'/v1/account/email',
             json=change_email.model_dump(exclude_none=True, by_alias=True)
         )
+        if validate_response:
+            return UserEnvelope(**response.json())
         return response
 
 
     def post_v1_account_password(
             self,
-            reset_password: ResetPassword
-
+            reset_password: ResetPassword,
+            validate_response = True
             ):
         """
         Сброс пароля
@@ -83,11 +86,14 @@ class AccountApi(RestClient):
             path=f'/v1/account/password',
             json=reset_password.model_dump(exclude_none=True, by_alias=True)
         )
+        if validate_response:
+            return UserEnvelope(**response.json())
         return response
 
     def put_v1_account_password(
             self,
-            change_password: ChangePassword
+            change_password: ChangePassword,
+            validate_response = True
             ):
         """
         Изменение пароля
@@ -96,4 +102,7 @@ class AccountApi(RestClient):
             path=f'/v1/account/password',
             json=change_password.model_dump(exclude_none=True, by_alias=True)
         )
+        if validate_response:
+            return UserEnvelope(**response.json())
         return response
+

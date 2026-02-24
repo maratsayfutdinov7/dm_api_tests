@@ -100,7 +100,9 @@ class AccountHelper:
             self,
             login: str,
             password: str,
-            email: str
+            email: str,
+            validate_response=True
+
             ):
         change_email = ChangeEmail(
             login=login,
@@ -108,8 +110,7 @@ class AccountHelper:
             email=email
         )
 
-        response = self.dm_account_api.account_api.put_v1_account_email(change_email=change_email)
-        assert response.status_code == 200, "Почта не изменена"
+        response = self.dm_account_api.account_api.put_v1_account_email(change_email=change_email, validate_response=validate_response)
 
         return response
 
@@ -157,18 +158,18 @@ class AccountHelper:
         response = self.dm_account_api.login_api.delete_all_v1_account_login()
         return response
 
-    def change_password(self, login: str, email: str, old_password: str, new_password: str, token:str):
+    def change_password(self, login: str, email: str, old_password: str, new_password: str, token: str, validate_response=True):
         reset_password_model = ResetPassword(login=login, email=email)
 
 
         self.dm_account_api.account_api.post_v1_account_password(
-        reset_password=reset_password_model
+        reset_password=reset_password_model, validate_response=validate_response
     )
 
         token_activation = self.get_activation_token_by_login(login=login, token_type='reset')
 
         change_password_model = ChangePassword(login=login,token=token_activation,old_password=old_password,new_password=new_password)
-        self.dm_account_api.account_api.put_v1_account_password(change_password=change_password_model)
+        return  self.dm_account_api.account_api.put_v1_account_password(change_password=change_password_model)
 
 
     @retrier
