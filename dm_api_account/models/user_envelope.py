@@ -7,7 +7,7 @@ from typing import (
     Any,
 )
 
-from enum import StrEnum
+from enum import Enum
 
 from pydantic import (
     BaseModel,
@@ -16,7 +16,7 @@ from pydantic import (
 )
 
 
-class UserRole(StrEnum):
+class UserRole(str, Enum):
     GUEST = 'Guest'
     PLAYER = 'Player'
     ADMINISTRATOR = 'Administrator'
