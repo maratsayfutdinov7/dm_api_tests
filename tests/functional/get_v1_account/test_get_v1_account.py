@@ -1,5 +1,39 @@
+from datetime import datetime
+
+from hamcrest import (
+    assert_that,
+    all_of,
+    has_property,
+    has_properties,
+    equal_to,
+    starts_with,
+    instance_of,
+    has_items,
+)
+
 def test_get_v1_account(auth_account_helper):
     response = auth_account_helper.dm_account_api.account_api.get_v1_account()
+    print(response)
+    assert_that(
+        response, all_of(
+            has_property('resource', has_property('login', starts_with('user'))),
+             has_property('resource', has_property('roles', has_items('Guest', 'Player'))),
+             has_property('resource', has_property('registration', instance_of(datetime))),
+             has_property(
+                'resource', has_properties(
+                    {
+                        "rating": has_properties(
+                            {
+                                "enabled": equal_to(True),
+                               "quality": equal_to(0),
+                                "quantity": equal_to(0)
+                            }
+                        )
+                    }
+                )
+            )
+        )
+    )
     print(response)
 
 def test_get_v1_account_no_auth(account_helper):

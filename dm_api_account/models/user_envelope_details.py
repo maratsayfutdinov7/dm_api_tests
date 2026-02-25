@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import (
     Optional,
     Any,
@@ -39,7 +40,7 @@ class Resource(BaseModel):
     login: str
     roles: List[str]
     online: str
-    registration: str
+    registration: datetime
     rating: Rating
     settings: Settings
     mediumPictureUrl: Optional[str] = None
