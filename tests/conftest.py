@@ -1,4 +1,8 @@
 import datetime
+import json
+import random
+import string
+import uuid
 from collections import namedtuple
 
 import pytest
@@ -6,6 +10,8 @@ import pytest
 from helpers.account_helper import AccountHelper
 from restclient.configuration import Configuration as MailhogConfiguration
 from restclient.configuration import Configuration as DmApiConfiguration
+
+
 
 from services.api_mailhog import (
     MailHogApi,
@@ -52,14 +58,62 @@ def auth_account_helper(mailhog_api):
     )
     return account_helper
 
-
+User = namedtuple('User', ['login', 'password', 'email'])
 @pytest.fixture
 def prepare_user():
-    now = datetime.now()
-    data = now.strftime('%d_%m_%Y_%H_%M_%S')
-    login = f'breeze{data}'
-    email = f'{login}@mail.ru'
-    password = '12345607030'
-    User = namedtuple('User',['login', 'password', 'email'])
-    user = User(login=login,password=password,email=email)
-    return user
+    unique_id = str(uuid.uuid4())[:8]
+    login = f"user_{unique_id}"
+    email = f"email_{unique_id}@example.com"
+    password = "Password123!"
+    return User(login=login, password=password, email=email)
+
+@pytest.fixture
+def generate_random_email():
+    domains = ["example.com", "testmail.co", "sample.net"]
+    user_len = random.randint(5, 10)
+    user = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(user_len))
+    domain = random.choice(domains)
+    email_new = f"{user}@{domain}"
+    return  email_new
+
+@pytest.fixture
+def generate_random_password():
+    length = random.randint(8, 12)
+    characters = string.ascii_letters + string.digits
+    new_password = ''.join(random.choice(characters) for _ in range(length))
+    return new_password
+
+
+@pytest.fixture
+def get_activation_token_by_login(
+        mailhog_api
+        ):
+    def _get_token(
+            login: str,
+            token_type: str = 'activation'
+            ):
+        response = mailhog_api.get_api_v2_messages()
+
+        for item in response.json().get('items', []):
+            try:
+                content_body = item.get('Content', {}).get('Body')
+                if not content_body:
+                    continue
+
+                user_data = json.loads(content_body)
+                user_login = user_data.get('Login')
+
+                if user_login == login:
+                    if token_type == 'activation':
+                        token_url = user_data.get('ConfirmationLinkUrl')
+                        if token_url:
+                            return token_url.split("/")[-1]
+                    elif token_type == 'reset':
+                        token_uri = user_data.get('ConfirmationLinkUri')
+                        if token_uri:
+                            return token_uri.split("/")[-1]
+            except (json.JSONDecodeError, TypeError, KeyError):
+                continue
+        return None
+
+    return _get_token
