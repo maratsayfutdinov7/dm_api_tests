@@ -23,6 +23,7 @@ class AccountApi(RestClient):
             path=f'/v1/account',
             json=registration.model_dump(exclude_none=True, by_alias=True)
         )
+        response.raise_for_status()
         return response
 
     def get_v1_account(
