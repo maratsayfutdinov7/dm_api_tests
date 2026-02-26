@@ -6,6 +6,7 @@ from dm_api_account.models.change_password import ChangePassword
 from dm_api_account.models.registration import Registration
 from dm_api_account.models.reset_password import ResetPassword
 from dm_api_account.models.user_envelope import UserEnvelope
+from dm_api_account.models.user_envelope_details import UserEnvelopeDetails
 from restclient.client import RestClient
 
 
@@ -27,7 +28,7 @@ class AccountApi(RestClient):
     def get_v1_account(
             self,
             **kwargs
-            ):
+            )-> UserEnvelopeDetails:
         """
         Получение информации о пользователе
         """
@@ -35,6 +36,8 @@ class AccountApi(RestClient):
             path=f'/v1/account',
             **kwargs
         )
+        if response.status_code == 200:
+            return UserEnvelopeDetails.model_validate(response.json())
         return response
 
     def put_v1_account_token(

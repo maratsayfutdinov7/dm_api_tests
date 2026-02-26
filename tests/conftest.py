@@ -47,14 +47,19 @@ def account_helper(account_api, mailhog_api):
     account_helper = AccountHelper(dm_account_api=account_api, mailhog=mailhog_api)
     return account_helper
 
-@pytest.fixture(scope="session")
-def auth_account_helper(mailhog_api):
+@pytest.fixture(scope="function")
+def auth_account_helper(mailhog_api, prepare_user):
     dm_api_configuration = DmApiConfiguration(host='http://185.185.143.231:5051', disable_log=False)
     account = DmApiAccount(configuration=dm_api_configuration)
     account_helper = AccountHelper(dm_account_api=account, mailhog=mailhog_api)
+    account_helper.register_new_user(
+        login=prepare_user.login,
+        password=prepare_user.password,
+        email=prepare_user.email
+    )
     account_helper.auth_client(
-        login='breeze17_02_2026_11_01_43',
-        password='12345607030'
+        login=prepare_user.login,
+        password=prepare_user.password
     )
     return account_helper
 
@@ -84,7 +89,7 @@ def generate_random_password():
     return new_password
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def get_activation_token_by_login(
         mailhog_api
         ):
