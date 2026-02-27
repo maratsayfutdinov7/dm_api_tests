@@ -1,5 +1,6 @@
 import datetime
 
+import pytest
 from hamcrest import (
     has_property,
     starts_with,
@@ -9,6 +10,9 @@ from hamcrest import (
     has_properties,
     equal_to,
 )
+
+from checkers.http_checkers import check_status_code_http
+from dm_api_account.models.registration import Registration
 
 
 def test_post_v1_account(account_helper, prepare_user):
@@ -39,6 +43,33 @@ def test_post_v1_account(account_helper, prepare_user):
     )
     print(response)
 
+
+@pytest.mark.parametrize(
+    "login, email, password, error_message, expected_status_code", [
+        ("user", "test@example.com", "12345", {
+            "errors": {
+                "Password": ["Short"]
+            }
+        }, 400),
+        ("user", "testexample.com", "password123", {
+            "errors": {
+                "Email": ["Invalid"]
+            }
+        }, 400),
+        ("u", "test@example.com", "password123", {
+            "errors": {
+                "Login": ["Short"]
+            }
+        }, 400),
+    ]
+    )
+
+def test_post_v1_account_no_registration(account_helper, login, email, password, error_message, expected_status_code):
+    registration = Registration(login=login, email=email, password=password)
+
+    with check_status_code_http(expected_status_code=expected_status_code, expected_message=error_message):
+        response = account_helper.dm_account_api.account_api.post_v1_account(registration=registration)
+        print(response)
 
 
 
