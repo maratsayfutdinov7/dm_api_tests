@@ -3,6 +3,8 @@ import random
 import string
 import time
 
+import allure
+
 from dm_api_account.models.change_email import ChangeEmail
 from dm_api_account.models.change_password import ChangePassword
 from dm_api_account.models.login_credentials import LoginCredentials
@@ -54,7 +56,7 @@ class AccountHelper:
         self.dm_account_api = dm_account_api
         self.mailhog = mailhog
 
-
+    @allure.step('Регистрация пользователя')
     def register_new_user(
             self,
             login: str,
@@ -79,6 +81,7 @@ class AccountHelper:
         response =self.dm_account_api.account_api.put_v1_account_token(account_token=token)
         return  response
 
+    @allure.step('Аутентификация пользователя')
     def user_login(
             self,
             login: str,
@@ -97,6 +100,7 @@ class AccountHelper:
             assert response.headers['x-dm-auth-token'], "Токен пользователя не был получен"
         return response
 
+    @allure.step('Изменение почты')
     def change_email(
             self,
             login: str,
@@ -145,6 +149,7 @@ class AccountHelper:
         response = self.dm_account_api.login_api.delete_v1_account_login()
         return response
 
+    @allure.step('Выход из аккаунта из всех устройств')
     def logout_client_all(
             self
             ):
@@ -159,12 +164,13 @@ class AccountHelper:
         response = self.dm_account_api.login_api.delete_all_v1_account_login()
         return response
 
+    @allure.step('Изменение пароля')
     def change_password(self, login: str, email: str, old_password: str, new_password: str, token: str, validate_response=True):
         reset_password_model = ResetPassword(login=login, email=email)
 
-
-        self.dm_account_api.account_api.post_v1_account_password(
-        reset_password=reset_password_model, validate_response=validate_response
+        with allure.step('Сброс пароля'):
+            self.dm_account_api.account_api.post_v1_account_password(
+            reset_password=reset_password_model, validate_response=validate_response
     )
 
         token_activation = self.get_activation_token_by_login(login=login, token_type='reset')
