@@ -71,3 +71,4 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+      - run: echo "https://maratsayfutdinov7.github.io/dm_api_tests/"
