@@ -9,6 +9,7 @@ import uuid
 import curlify
 
 from restclient.configuration import Configuration
+from restclient.utilities import allure_attach
 
 
 class RestClient:
@@ -54,7 +55,7 @@ class RestClient:
     ):
         return self._send_request_(method='DELETE', path=path, **kwargs)
 
-
+    @allure_attach
 
     def _send_request_(self, method, path, **kwargs):
         log = self.log.bind(event_id=str(uuid.uuid4()))
