@@ -1,18 +1,11 @@
-import datetime
-
 import pytest
-from hamcrest import (
-    has_property,
-    starts_with,
-    assert_that,
-    all_of,
-    instance_of,
-    has_properties,
-    equal_to,
-)
+
 
 from checkers.http_checkers import check_status_code_http
+from checkers.post_v1_account import PostV1Account
+
 from dm_api_account.models.registration import Registration
+
 
 
 def test_post_v1_account(account_helper, prepare_user):
@@ -22,25 +15,7 @@ def test_post_v1_account(account_helper, prepare_user):
 
     account_helper.register_new_user(login=login,password=password,email=email)
     response = account_helper.user_login(login=login, password=password)
-    assert_that(
-        response, all_of(
-            has_property('resource', has_property('login', starts_with('user'))),
-            has_property('resource', has_property('registration', instance_of(datetime.datetime))),
-            has_property(
-                'resource', has_properties(
-                    {
-                        "rating": has_properties(
-                            {
-                                "enabled": equal_to(True),
-                                "quality": equal_to(0),
-                                "quantity": equal_to(0)
-                            }
-                        )
-                    }
-                )
-            )
-        )
-    )
+    PostV1Account.check_response_values(response)
     print(response)
 
 
