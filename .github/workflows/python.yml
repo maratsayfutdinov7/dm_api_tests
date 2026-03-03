@@ -25,13 +25,13 @@ jobs:
           distribution: 'microsoft'
           java-version: '17'
 
-      # Скачиваем и распаковываем Swagger Coverage CLI через проверенный экшен
+      # Скачиваем движок Swagger Coverage CLI напрямую через wget
       - name: Download Swagger Coverage CLI
-        uses: engineerd/configurator@v0.0.10
-        with:
-          url: "https://github.com"
-          from: "swagger-coverage-1.5.0/bin/swagger-coverage-commandline"
-          to: "swagger-coverage-commandline"
+        run: |
+          wget "https://github.com" -O swagger-cli.zip
+          unzip swagger-cli.zip
+          chmod +x swagger-coverage-1.5.0/bin/swagger-coverage-commandline
+          echo "$(pwd)/swagger-coverage-1.5.0/bin" >> $GITHUB_PATH
 
       - name: Install dependencies
         run: |
@@ -43,18 +43,19 @@ jobs:
           pytest ./tests --alluredir=allure-results --disable-warnings
         continue-on-error: true
 
+      # Поиск всех HTML файлов для диагностики
       - name: Debug - List files
         run: |
           echo "Checking root directory:"
           ls -la
-          echo "Checking swagger-coverage-output directory:"
-          ls -la swagger-coverage-output || echo "Output folder not found"
+          echo "Looking for any HTML reports in project:"
+          find . -name "*.html"
 
       - name: Archive Swagger coverage report
         uses: actions/upload-artifact@v4
         with:
           name: swagger-coverage-report
-          path: "swagger-coverage-report-dm_api_account.html"
+          path: "swagger-coverage-report-dm-api-account.html"
           if-no-files-found: warn
 
       - name: Archive allure results
