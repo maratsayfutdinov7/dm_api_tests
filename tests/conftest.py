@@ -8,6 +8,9 @@ from pathlib import Path
 
 import pytest
 from pygments.lexer import default
+from requests.auth import HTTPBasicAuth
+from swagger_coverage_py.reporter import CoverageReporter
+
 from vyper import v
 
 from helpers.account_helper import AccountHelper
@@ -149,3 +152,12 @@ def get_activation_token_by_login(
         return None
 
     return _get_token
+
+
+@pytest.fixture(scope="session", autouse=True)
+def setup_swagger_coverage():
+    reporter = CoverageReporter(api_name="dm-api-account", host="http://185.185.143.231:5051", )
+    reporter.cleanup_input_files()
+    reporter.setup("/swagger/Account/swagger.json?urls.primaryName=Account")
+    yield
+    reporter.generate_report()
