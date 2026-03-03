@@ -156,7 +156,7 @@ def get_activation_token_by_login(
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_swagger_coverage():
-    reporter = CoverageReporter(api_name="dm-api-account", host="http://185.185.143.231:5051", )
+    reporter = CoverageReporter(api_name="dm_api_account", host="http://185.185.143.231:5051", )
     reporter.cleanup_input_files()
     reporter.setup("/swagger/Account/swagger.json?urls.primaryName=Account")
     yield
