@@ -25,14 +25,13 @@ jobs:
           distribution: 'microsoft'
           java-version: '17'
 
-      # Используем curl с правильной ссылкой на релиз
+      # Скачиваем и распаковываем Swagger Coverage CLI через проверенный экшен
       - name: Download Swagger Coverage CLI
-        run: |
-          curl -L "https://github.com" -o swagger-coverage-1.5.0.zip
-          unzip swagger-coverage-1.5.0.zip
-          chmod +x swagger-coverage-1.5.0/bin/swagger-coverage-commandline
-          # Добавляем путь в PATH для текущей сессии GitHub Actions
-          echo "$(pwd)/swagger-coverage-1.5.0/bin" >> $GITHUB_PATH
+        uses: engineerd/configurator@v0.0.10
+        with:
+          url: "https://github.com"
+          from: "swagger-coverage-1.5.0/bin/swagger-coverage-commandline"
+          to: "swagger-coverage-commandline"
 
       - name: Install dependencies
         run: |
@@ -55,7 +54,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: swagger-coverage-report
-          path: "swagger-coverage-report-dm-api-account.html"
+          path: "swagger-coverage-report-dm_api_account.html"
           if-no-files-found: warn
 
       - name: Archive allure results
@@ -102,3 +101,4 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
       - run: echo "https://maratsayfutdinov7.github.io"
+
