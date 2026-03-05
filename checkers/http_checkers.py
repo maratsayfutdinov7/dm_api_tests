@@ -1,5 +1,6 @@
 from contextlib import contextmanager
 
+import allure
 import requests
 from requests.exceptions import HTTPError
 
@@ -13,6 +14,7 @@ from requests.exceptions import HTTPError
 
 
 @contextmanager
+@allure.step('Проверка статус кода и сообщение об ошибке')
 def check_status_code_http(
         expected_status_code: int = requests.codes.OK,
         expected_message: [str, dict] = ''
