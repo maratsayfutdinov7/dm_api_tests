@@ -1,6 +1,8 @@
 import datetime
 import json
+import os
 import random
+import shutil
 import string
 import uuid
 from collections import namedtuple
@@ -156,8 +158,13 @@ def get_activation_token_by_login(
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_swagger_coverage():
-    reporter = CoverageReporter(api_name="dm_api_account", host="http://185.185.143.231:5051", )
-    reporter.cleanup_input_files()
+    reporter = CoverageReporter(api_name="dm-api-account", host="http://185.185.143.231:5051")
     reporter.setup("/swagger/Account/swagger.json?urls.primaryName=Account")
     yield
-    reporter.generate_report()
+    try:
+        reporter.generate_report()
+    except Exception as e:
+        import traceback
+        print(f"Ошибка при генерации отчета: {e}")
+        traceback.print_exc()
+
