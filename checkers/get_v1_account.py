@@ -12,7 +12,7 @@ from hamcrest import (
     has_items,
 )
 
-from dm_api_account.models.user_envelope_details import UserEnvelopeDetails
+from clients.http.dm_api_account.models.user_envelope_details import UserEnvelopeDetails
 
 
 class GetV1Account:

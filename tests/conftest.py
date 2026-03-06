@@ -1,23 +1,20 @@
-import datetime
 import json
 import os
 import random
-import shutil
 import string
 import uuid
 from collections import namedtuple
 from pathlib import Path
 
 import pytest
-from pygments.lexer import default
-from requests.auth import HTTPBasicAuth
 from swagger_coverage_py.reporter import CoverageReporter
 
 from vyper import v
 
 from helpers.account_helper import AccountHelper
-from restclient.configuration import Configuration as MailhogConfiguration
-from restclient.configuration import Configuration as DmApiConfiguration
+from packages.notifier.bot import send_file
+from packages.restclient.configuration import Configuration as MailhogConfiguration
+from packages.restclient.configuration import Configuration as DmApiConfiguration
 
 
 
@@ -28,8 +25,6 @@ from services.api_mailhog import (
 from services.dm_api_account import DmApiAccount
 
 import structlog
-
-from datetime import datetime
 
 structlog.configure(
     processors=[
@@ -43,6 +38,8 @@ options = (
     'service.mailhog',
     'user.login',
     'user.password',
+    'telegram.chat_id',
+    'telegram.token'
 )
 
 @pytest.fixture(scope='session',autouse=True)
@@ -54,7 +51,10 @@ def set_config(request):
     v.read_in_config()
     for option in options:
         v.set(f'{option}',request.config.getoption(f'--{option}'))
-
+    os.environ["TELEGRAM_BOT_CHAT_ID"] = v.get("telegram.chat_id")
+    os.environ["TELEGRAM_BOT_ACCESS_TOKEN"] = v.get("telegram.token")
+    request.config.stash["telegram-notifier-addfields"]["enviroment"] = config_name
+    request.config.stash["telegram-notifier-addfields"]["report"] = 'https://maratsayfutdinov7.github.io/dm_api_tests/'
     yield
 
 def pytest_addoption(parser):
@@ -167,4 +167,5 @@ def setup_swagger_coverage():
         import traceback
         print(f"Ошибка при генерации отчета: {e}")
         traceback.print_exc()
+
 
