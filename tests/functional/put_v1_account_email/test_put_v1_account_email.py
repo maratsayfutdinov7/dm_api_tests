@@ -1,25 +1,6 @@
-from typing import Any
-
-from json import loads
-
 import allure
-import requests
-from requests import Response
-
-import random
-import string
-
-from helpers.account_helper import AccountHelper
-from services.api_mailhog import (
-    MailhogApi,
-    MailHogApi,
-)
-from services.dm_api_account import DmApiAccount
 
 import structlog
-
-import json
-from restclient.configuration import Configuration
 
 structlog.configure(
     processors=[

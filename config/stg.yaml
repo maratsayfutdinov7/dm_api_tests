@@ -5,3 +5,7 @@ service:
 user:
   login: 'user_f9b742f1'
   password: 'Password123!'
+
+telegram:
+  chat_id: '-1003676581184'
+  token: '8623149925:AAEhuOwIdbNq0DNxrmogrj7yUxxfXtmwm8w'

@@ -6,8 +6,9 @@ import pytest
 
 from checkers.http_checkers import check_status_code_http
 from checkers.post_v1_account import PostV1Account
+from clients.http.dm_api_account.models.registration import Registration
 
-from dm_api_account.models.registration import Registration
+
 
 
 

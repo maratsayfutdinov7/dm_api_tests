@@ -1,10 +1,6 @@
-from json import JSONDecodeError
-from tkinter.constants import SEL_LAST
-
 import allure
-import requests
 
-from restclient.client import RestClient
+from packages.restclient.client import RestClient
 
 
 class MailhogApi(RestClient):
